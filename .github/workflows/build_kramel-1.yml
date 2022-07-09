@@ -1,0 +1,39 @@
+name: Build-kernel - 1
+
+on: # [push]
+#  release:
+#    types: [published]
+#  push:
+#    branches:
+#      - master
+#    paths:
+#      - '.config'
+#  schedule:
+#    - cron: 0 8 * * 5
+# Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  watch:
+    types: [started]
+
+env:
+  TG_TOKEN: ${{ secrets.TOKEN }}
+  CONFIG: ${{ secrets.DEFCON }}
+  DEVICE: ${{ secrets.DEPIS }}
+  CODENAME: ${{ secrets.NAME }}
+  VERSION: ${{ secrets.VER }}
+  TZ: Asia/Jakarta
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: panchajanya1999/archlinux:latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@master
+
+        - name: Build Kernel - 1
+          run: |
+            pacman -Syu --needed --noconfirm inetutils bc cpio git
+            git config --global --add safe.directory /__w/scripts/scripts
+            bash kramel_1.sh
