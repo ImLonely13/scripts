@@ -108,7 +108,6 @@ tg "
 
     echo -e "\n\e[1;93m|| Building kernel ||\e[0m"
     BUILD_START=$(date +"%s")
-     export LOCALVERSION="-_-$VERSION"
      make -j$(nproc) O=out ARCH=arm64 ${CONFIG}
      make -j$(nproc) ARCH=arm64 O=out \
      "${MAKE[@]}" 2>&1 | tee log.txt
