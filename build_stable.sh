@@ -34,9 +34,6 @@ export CODENAME=$CODENAME
 export DEVICE="$DEVICE"
 export CONFIG=$CONFIG
 
-# Default directory where kernel is located in.
-KDIR=$(pwd)
-
 # User and Host name
 export BUILDER=ItsProf
 export HOST=github.com
@@ -45,23 +42,22 @@ export HOST=github.com
 REPO_URL="https://github.com/ImLonely13/android_kernel_xiaomi_mt6768"
 export REPO_URL
 
-# Commit hash of HEAD.
-COMMIT_HASH=$(git rev-parse --short HEAD)
-export COMMIT_HASH
-
 # Number of jobs to run.
 PROCS=$(nproc --all)
 
 # Necessary variables to be exported.
-export STATUS=BETA
+export STATUS=STABLE
+export VERSION=$VERSION
+export DATE2=$(date +"%m%d")
+
 
     echo -e "\n\e[1;93m|| Cloning toolchains ||\e[0m"
-    git clone https://github.com/ImLonely13/android_kernel_xiaomi_mt6768 --depth=1 -b beta android_kernel_xiaomi_mt6768-beta
-    git clone https://github.com/cyberknight777/gcc-arm64 --depth=1 -b master android_kernel_xiaomi_mt6768-beta/gcc64
-    git clone https://github.com/cyberknight777/gcc-arm --depth=1 -b master android_kernel_xiaomi_mt6768-beta/gcc32
-    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin android_kernel_xiaomi_mt6768-beta/anykernel_2
+    git clone https://github.com/ImLonely13/android_kernel_xiaomi_mt6768 --depth=1 -b twelve $(pwd)/android_kernel_xiaomi_mt6768-stable
+    git clone https://github.com/cyberknight777/gcc-arm64 --depth=1 -b master android_kernel_xiaomi_mt6768-stable/gcc64
+    git clone https://github.com/cyberknight777/gcc-arm --depth=1 -b master android_kernel_xiaomi_mt6768-stable/gcc32
+    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin android_kernel_xiaomi_mt6768-stable/anykernel_1
 
-    cd android_kernel_xiaomi_mt6768-beta
+    cd android_kernel_xiaomi_mt6768-stable
     KBUILD_COMPILER_STRING=$(gcc64/bin/aarch64-elf-gcc --version | head -n 1)
     export KBUILD_COMPILER_STRING
     export PATH=$(pwd)/gcc32/bin:$(pwd)/gcc64/bin:/usr/bin/:${PATH}
@@ -87,9 +83,9 @@ export STATUS=BETA
     export KBUILD_BUILD_HOST=$HOST
     export KBUILD_BUILD_USER=$BUILDER
     export kver=$KBUILD_BUILD_VERSION
-    export VERSION=$VERSION
-    export DATE2=$(date +"%m%d")
     export zipn=[$DATE2][$STATUS][$CODENAME]LynxesKernel-$VERSION
+    COMMIT_HASH=$(git rev-parse --short HEAD)
+    export COMMIT_HASH
 
 
 tg "
@@ -119,7 +115,7 @@ tg "
     fi
 
     echo -e "\n\e[1;93m|| Zipping into a flashable zip ||\e[0m"
-    mv out/arch/arm64/boot/Image.gz anykernel_2/
-    cd anykernel_2 || exit 1
+    mv out/arch/arm64/boot/Image.gz anykernel_1/
+    cd anykernel_1 || exit 1
     zip -r9 "$zipn".zip . -x ".git*" -x "README.md" -x "LICENSE" -x "*.zip"
     tgs "${zipn}.zip" "*#${kver} ${KBUILD_COMPILER_STRING}*"

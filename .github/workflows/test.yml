@@ -1,4 +1,4 @@
-name: Build-kernel - 2
+name: Test Build
 
 on: # [push]
 #  release:
@@ -32,8 +32,8 @@ jobs:
         - name: Checkout
           uses: actions/checkout@master
 
-        - name: Build Kernel - 2
+        - name: Starting test build
           run: |
             pacman -Syu --needed --noconfirm inetutils bc cpio git
             git config --global --add safe.directory /__w/scripts/scripts
-            bash kramel_2.sh
+            bash build_test.sh

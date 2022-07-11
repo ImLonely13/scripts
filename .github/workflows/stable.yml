@@ -1,4 +1,4 @@
-name: Build-kernel - 1
+name: Stable Build
 
 on: # [push]
 #  release:
@@ -32,8 +32,8 @@ jobs:
         - name: Checkout
           uses: actions/checkout@master
 
-        - name: Build Kernel - 1
+        - name: Starting stable build
           run: |
             pacman -Syu --needed --noconfirm inetutils bc cpio git
             git config --global --add safe.directory /__w/scripts/scripts
-            bash kramel_1.sh
+            bash build_stable.sh
