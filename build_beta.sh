@@ -112,13 +112,15 @@ tg "
      "${MAKE[@]}" 2>&1 | tee log.txt
     BUILD_END=$(date +"%s")
     DIFF=$((BUILD_END - BUILD_START))
-    if ! [ -a out/arch/arm64/boot/Image.gz ]; then
+    if ! [ -a out/arch/arm64/boot/Image.gz-dtb ]; then
             tgs "log.txt" "*Build failed*"
             exit 1
     fi
 
     echo -e "\n\e[1;93m|| Zipping into a flashable zip ||\e[0m"
-    mv out/arch/arm64/boot/Image.gz anykernel_2/
+    cp -af out/arch/arm64/boot/Image.gz-dtb anykernel_2
+    mv out/arch/arm64/boot/dts/mediatek/mt6768.dtb anykernel_2/dtb
+    cp -af out/arch/arm64/boot/dtbo.img anykernel_2
     cd anykernel_2 || exit 1
     zip -r9 "$zipn".zip . -x ".git*" -x "README.md" -x "LICENSE" -x "*.zip"
     tgs "${zipn}.zip" "*#${kver} ${KBUILD_COMPILER_STRING}*"
