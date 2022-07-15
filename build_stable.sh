@@ -35,11 +35,11 @@ export DEVICE="$DEVICE"
 export CONFIG=$CONFIG
 
 # User and Host name
-export BUILDER=ItsProf
+export BUILDER=ItsProfa
 export HOST=github.com
 
 # Kernel repository URL.
-REPO_URL="https://github.com/ImLonely13/android_kernel_xiaomi_mt6768"
+REPO_URL="https://github.com/Project-Gabut/kernel_xiaomi_mt6768"
 export REPO_URL
 
 # Number of jobs to run.
@@ -52,12 +52,12 @@ export DATE2=$(date +"%m%d")
 
 
     echo -e "\n\e[1;93m|| Cloning toolchains ||\e[0m"
-    git clone https://github.com/ImLonely13/android_kernel_xiaomi_mt6768 --depth=1 -b twelve $(pwd)/android_kernel_xiaomi_mt6768-stable
-    git clone https://github.com/cyberknight777/gcc-arm64 --depth=1 -b master android_kernel_xiaomi_mt6768-stable/gcc64
-    git clone https://github.com/cyberknight777/gcc-arm --depth=1 -b master android_kernel_xiaomi_mt6768-stable/gcc32
-    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin android_kernel_xiaomi_mt6768-stable/anykernel_1
+    git clone https://github.com/Project-Gabut/kernel_xiaomi_mt6768 --depth=1 -b twelve $(pwd)/kernel-stable
+    git clone https://github.com/cyberknight777/gcc-arm64 --depth=1 -b master kernel-stable/gcc64
+    git clone https://github.com/cyberknight777/gcc-arm --depth=1 -b master kernel-stable/gcc32
+    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin kernel-stable/anykernel_1
 
-    cd android_kernel_xiaomi_mt6768-stable
+    cd kernel-stable
     KBUILD_COMPILER_STRING=$(gcc64/bin/aarch64-elf-gcc --version | head -n 1)
     export KBUILD_COMPILER_STRING
     export PATH=$(pwd)/gcc32/bin:$(pwd)/gcc64/bin:/usr/bin/:${PATH}

@@ -42,7 +42,7 @@ export BUILDER=ItsProf
 export HOST=github.com
 
 # Kernel repository URL.
-REPO_URL="https://github.com/ImLonely13/android_kernel_xiaomi_mt6768"
+REPO_URL="https://github.com/Project-Gabut/kernel_xiaomi_mt6768"
 export REPO_URL
 
 # Number of jobs to run.
@@ -55,12 +55,12 @@ export VERSION=$VERSION
 
 
     echo -e "\n\e[1;93m|| Cloning toolchains ||\e[0m"
-    git clone https://github.com/ImLonely13/android_kernel_xiaomi_mt6768 --depth=1 -b beta android_kernel_xiaomi_mt6768-beta
-    git clone https://github.com/cyberknight777/gcc-arm64 --depth=1 -b master android_kernel_xiaomi_mt6768-beta/gcc64
-    git clone https://github.com/cyberknight777/gcc-arm --depth=1 -b master android_kernel_xiaomi_mt6768-beta/gcc32
-    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin android_kernel_xiaomi_mt6768-beta/anykernel_2
+    git clone https://github.com/Project-Gabut/kernel_xiaomi_mt6768 --depth=1 -b beta $(pwd)/kernel-beta
+    git clone https://github.com/cyberknight777/gcc-arm64 --depth=1 -b master kernel-beta/gcc64
+    git clone https://github.com/cyberknight777/gcc-arm --depth=1 -b master kernel-beta/gcc32
+    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin kernel-beta/anykernel_2
 
-    cd android_kernel_xiaomi_mt6768-beta
+    cd kernel-beta
     KBUILD_COMPILER_STRING=$(gcc64/bin/aarch64-elf-gcc --version | head -n 1)
     export KBUILD_COMPILER_STRING
     export PATH=$(pwd)/gcc32/bin:$(pwd)/gcc64/bin:/usr/bin/:${PATH}
