@@ -1,4 +1,4 @@
-name: Stable Build
+name: Gcc Build
 
 on: # [push]
 #  release:
@@ -20,7 +20,6 @@ env:
   CONFIG: ${{ secrets.DEFCON }}
   DEVICE: ${{ secrets.DEPIS }}
   CODENAME: ${{ secrets.NAME }}
-  VERSION: ${{ secrets.VER }}
   TZ: Asia/Jakarta
 
 jobs:
@@ -40,4 +39,4 @@ jobs:
             sudo locale-gen en_US.UTF-8
             pacman -Syu --needed --noconfirm inetutils bc cpio git
             git config --global --add safe.directory /__w/scripts/scripts
-            bash build_stable.sh
+            bash build_gcc.sh

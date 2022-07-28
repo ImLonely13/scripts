@@ -34,8 +34,11 @@ export CODENAME=$CODENAME
 export DEVICE="$DEVICE"
 export CONFIG=$CONFIG
 
+# Default directory where kernel is located in.
+KDIR=$(pwd)
+
 # User and Host name
-export BUILDER=ItsProfa
+export BUILDER=ItsProf
 export HOST=github.com
 
 # Kernel repository URL.
@@ -47,43 +50,45 @@ PROCS=$(nproc --all)
 
 # Necessary variables to be exported.
 export STATUS=STABLE
-export VERSION=$VERSION
 export DATE2=$(date +"%m%d")
+export VERSION=$VERSION
 
 
     echo -e "\n\e[1;93m|| Cloning toolchains ||\e[0m"
-    git clone https://github.com/Project-Gabut/kernel_xiaomi_mt6768 --depth=1 -b twelve $(pwd)/kernel-stable
-    git clone https://github.com/cyberknight777/gcc-arm64 --depth=1 -b master kernel-stable/gcc64
-    git clone https://github.com/cyberknight777/gcc-arm --depth=1 -b master kernel-stable/gcc32
-    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin kernel-stable/anykernel_1
+    git clone https://github.com/Project-Gabut/kernel_xiaomi_mt6768 --depth=1 -b base-clang $(pwd)/kernel-clang
+    git clone https://gitlab.com/dakkshesh07/neutron-clang --depth=1 -b Neutron-15 kernel-clang/neutron
+    git clone https://github.com/ImLonely13/AnyKernel3 -b merlin kernel-clang/anykernel_2
 
-    cd kernel-stable
-    KBUILD_COMPILER_STRING=$(gcc64/bin/aarch64-elf-gcc --version | head -n 1)
+    cd kernel-clang
+    KBUILD_COMPILER_STRING=$($(pwd)/neutron/bin/clang --version | head -n 1)
     export KBUILD_COMPILER_STRING
-    export PATH=$(pwd)/gcc32/bin:$(pwd)/gcc64/bin:/usr/bin/:${PATH}
+    export PATH=$(pwd)/neutron/bin/:/usr/bin/:${PATH}
     MAKE+=(
-        CC=aarch64-elf-gcc
-        LD=aarch64-elf-ld.lld
-        CROSS_COMPILE=aarch64-elf-
-        CROSS_COMPILE_ARM32=arm-eabi-
-        AR=llvm-ar
-        NM=llvm-nm
-        OBJDUMP=llvm-objdump
-        OBJCOPY=llvm-objcopy
-        OBJSIZE=llvm-objsize
-        STRIP=llvm-strip
-        HOSTAR=llvm-ar
-        HOSTCC=gcc
-        HOSTCXX=aarch64-elf-g++
-	CONFIG_DEBUG_SECTION_MISMATCH=y
-        CONFIG_SECTION_MISMATCH_WARN_ONLY=y
+    LD_LIBRARY_PATH="$(pwd)/neutron/lib64:${LD_LIBRARY_PATH}" \
+    CC=clang
+    AR=llvm-ar
+    NM=llvm-nm
+    OBJCOPY=llvm-objcopy
+    OBJDUMP=llvm-objdump
+    STRIP=llvm-strip
+    LD=ld.lld
+    HOSTAR=llvm-ar
+    HOSTCXX=clang++
+    HOSTCC=clang
+    CXX=clang++
+    READELF=llvm-readelf
+    CLANG_TRIPLE=aarch64-linux-gnu-
+    CROSS_COMPILE=aarch64-linux-gnu-
+    CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+    CONFIG_DEBUG_SECTION_MISMATCH=y
+    CONFIG_SECTION_MISMATCH_WARN_ONLY=y
     )
 
     export KBUILD_BUILD_VERSION=$GITHUB_RUN_NUMBER
     export KBUILD_BUILD_HOST=$HOST
     export KBUILD_BUILD_USER=$BUILDER
     export kver=$KBUILD_BUILD_VERSION
-    export zipn=[$DATE2][$STATUS][$CODENAME]LynxesKernel-$VERSION
+    export zipn=[$DATE2][$STATUS]LynxesKernel[$CODENAME]
     COMMIT_HASH=$(git rev-parse --short HEAD)
     export COMMIT_HASH
 
@@ -96,7 +101,7 @@ tg "
 *Device*: \`${DEVICE} [${CODENAME}]\`
 *Kernel Version*: \`$(make kernelversion 2>/dev/null)\`
 *Compiler*: \`${KBUILD_COMPILER_STRING}\`
-*Linker*: \`$(gcc64/bin/aarch64-elf-ld.lld -v | head -n1 | sed 's/(compatible with [^)]*)//' |
+*Linker*: \`$($(pwd)/neutron/bin/ld.lld -v | head -n1 | sed 's/(compatible with [^)]*)//' |
             head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g' -e 's/[[:space:]]*$//')\`
 *Branch*: \`$(git rev-parse --abbrev-ref HEAD)\`
 *Last Commit*: [${COMMIT_HASH}](${REPO_URL}/commit/${COMMIT_HASH})
@@ -115,9 +120,9 @@ tg "
     fi
 
     echo -e "\n\e[1;93m|| Zipping into a flashable zip ||\e[0m"
-    cp -af out/arch/arm64/boot/Image.gz-dtb anykernel_1
-    cp -af out/arch/arm64/boot/dtbo.img anykernel_1
-    mv out/arch/arm64/boot/dts/mediatek/mt6768.dtb anykernel_1/dtb
-    cd anykernel_1 || exit 1
+    cp -af out/arch/arm64/boot/Image.gz-dtb anykernel_2
+    mv out/arch/arm64/boot/dts/mediatek/mt6768.dtb anykernel_2/dtb
+    cp -af out/arch/arm64/boot/dtbo.img anykernel_2
+    cd anykernel_2 || exit 1
     zip -r9 "$zipn".zip . -x ".git*" -x "README.md" -x "LICENSE" -x "*.zip"
     tgs "${zipn}.zip" "*#${kver} ${KBUILD_COMPILER_STRING}*"
