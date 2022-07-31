@@ -56,7 +56,7 @@ export VERSION=$VERSION
 
     echo -e "\n\e[1;93m|| Cloning toolchains ||\e[0m"
     git clone https://github.com/Project-Gabut/kernel_xiaomi_mt6768 --depth=1 -b base-clang $(pwd)/kernel-clang
-    git clone https://gitlab.com/dakkshesh07/neutron-clang --depth=1 -b Neutron-15 kernel-clang/neutron
+    git clone https://gitlab.com/dakkshesh07/neutron-clang --depth=1 -b Neutron-16 kernel-clang/neutron
     git clone https://github.com/ImLonely13/AnyKernel3 -b merlin kernel-clang/anykernel_2
 
     cd kernel-clang
